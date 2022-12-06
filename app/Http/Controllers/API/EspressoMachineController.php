@@ -17,6 +17,28 @@ class EspressoMachineController extends Controller
     const WATER_CONTAINER_CAPACITY = 2;
 
     /**
+     * @return EspressoMachineClass
+     * @throws \App\Classes\ContainerFullException
+     */
+    public function createMachine(){
+
+        $machine = new EspressoMachineClass();
+
+        $machine->setBeansContainer(new BeansContainerClass(self::BEANS_CONTAINER_CAPACITY));
+        $machine->setWaterContainer(new WaterContainerClass(self::WATER_CONTAINER_CAPACITY));
+
+        $redis = Redis::connection();
+
+        $beansContainerCapacity = $redis->get('settings:1:BEANS_CONTAINER_CAPACITY') == null ? 50 : $redis->get('settings:1:BEANS_CONTAINER_CAPACITY');
+        $waterContainerCapacity = $redis->get('settings:1:WATER_CONTAINER_CAPACITY') == null ? 2 : $redis->get('settings:1:WATER_CONTAINER_CAPACITY');
+
+        $machine->addBeans($beansContainerCapacity);
+        $machine->addWater($waterContainerCapacity);
+
+        return $machine;
+    }
+
+    /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      * @throws \App\Classes\ContainerFullException
@@ -24,14 +46,7 @@ class EspressoMachineController extends Controller
      */
     public function makeEspresso(Request $request)
     {
-        $redis = Redis::connection();
-        $machine = new EspressoMachineClass();
-        $machine->setBeansContainer(new BeansContainerClass(self::BEANS_CONTAINER_CAPACITY));
-        $machine->setWaterContainer(new WaterContainerClass(self::WATER_CONTAINER_CAPACITY));
-        $beansContainerCapacity = $redis->get('settings:1:BEANS_CONTAINER_CAPACITY') == null ? 50 : $redis->get('settings:1:BEANS_CONTAINER_CAPACITY');
-        $waterContainerCapacity = $redis->get('settings:1:WATER_CONTAINER_CAPACITY') == null ? 2 : $redis->get('settings:1:WATER_CONTAINER_CAPACITY');
-        $machine->addBeans($beansContainerCapacity);
-        $machine->addWater($waterContainerCapacity);
+        $machine = $this->createMachine();
         $machine->makeEspresso();
         return response()->json(['status' => $machine->getStatus()]);
     }
@@ -44,14 +59,7 @@ class EspressoMachineController extends Controller
      */
     public function makeDoubleEspresso(Request $request)
     {
-        $redis = Redis::connection();
-        $machine = new EspressoMachineClass();
-        $machine->setBeansContainer(new BeansContainerClass(self::BEANS_CONTAINER_CAPACITY));
-        $machine->setWaterContainer(new WaterContainerClass(self::WATER_CONTAINER_CAPACITY));
-        $beansContainerCapacity = $redis->get('settings:1:BEANS_CONTAINER_CAPACITY') == null ? 50 : $redis->get('settings:1:BEANS_CONTAINER_CAPACITY');
-        $waterContainerCapacity = $redis->get('settings:1:WATER_CONTAINER_CAPACITY') == null ? 2 : $redis->get('settings:1:WATER_CONTAINER_CAPACITY');
-        $machine->addBeans($beansContainerCapacity);
-        $machine->addWater($waterContainerCapacity);
+        $machine = $this->createMachine();
         $machine->makeDoubleEspresso();
         return response()->json(['status' => $machine->getStatus()]);
     }
@@ -63,14 +71,7 @@ class EspressoMachineController extends Controller
      */
     public function getStatus(Request $request)
     {
-        $redis = Redis::connection();
-        $machine = new EspressoMachineClass();
-        $machine->setBeansContainer(new BeansContainerClass(self::BEANS_CONTAINER_CAPACITY));
-        $machine->setWaterContainer(new WaterContainerClass(self::WATER_CONTAINER_CAPACITY));
-        $beansContainerCapacity = $redis->get('settings:1:BEANS_CONTAINER_CAPACITY') == null ? 50 : $redis->get('settings:1:BEANS_CONTAINER_CAPACITY');
-        $waterContainerCapacity = $redis->get('settings:1:WATER_CONTAINER_CAPACITY') == null ? 2 : $redis->get('settings:1:WATER_CONTAINER_CAPACITY');
-        $machine->addBeans($beansContainerCapacity);
-        $machine->addWater($waterContainerCapacity);
+        $machine = $this->createMachine();
         return response()->json(['status' => $machine->getStatus()]);
     }
 }
