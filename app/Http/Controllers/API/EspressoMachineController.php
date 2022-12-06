@@ -16,7 +16,12 @@ class EspressoMachineController extends Controller
     const BEANS_CONTAINER_CAPACITY = 50;
     const WATER_CONTAINER_CAPACITY = 2;
 
-
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Classes\ContainerFullException
+     * @throws \App\Classes\NoBeansException
+     */
     public function makeEspresso(Request $request)
     {
         $redis = Redis::connection();
@@ -31,6 +36,12 @@ class EspressoMachineController extends Controller
         return response()->json(['status' => $machine->getStatus()]);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Classes\ContainerFullException
+     * @throws \App\Classes\NoBeansException
+     */
     public function makeDoubleEspresso(Request $request)
     {
         $redis = Redis::connection();
@@ -45,6 +56,11 @@ class EspressoMachineController extends Controller
         return response()->json(['status' => $machine->getStatus()]);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Classes\ContainerFullException
+     */
     public function getStatus(Request $request)
     {
         $redis = Redis::connection();
